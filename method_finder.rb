@@ -1,72 +1,129 @@
 # Find Ruby methods
+require 'method_source'
 
 module Methodfinder
 
-  def self.call(object, options = {})
-    args = [*options[:args]]
-    block = options[:block]
-    expected = options[:match]
+  # Patch NoMethodError#reciever
 
-    methods(object).collect do |symbol|
-      next if :cycle === symbol
+  NoMethodError.class_eval('attr_accessor :reciever')
+  Object.class_eval("""
+    def method_missing(*args)
       begin
-        args_copy = Marshal.load(Marshal.dump(args))
-        object_copy = Marshal.load(Marshal.dump(object))
-        result = object_copy.send(symbol, *args_copy, &block)
-        [symbol, args, result] if expected === result
-      rescue
-        nil
+        super
+      rescue NoMethodError => ex
+        ex.reciever = self
+        raise ex
       end
-    end.compact
+    end
+  """)
+
+  def self.solve(&block)
+    raise ArgumentError, 'no block given' unless block_given?
+    begin
+      block.call
+    rescue NoMethodError => ex
+      object = ex.reciever
+      message = ex.name
+    end
+    raise ArgumentError, 'no unknown method found' unless message
+    found = methods_for(object).select do |each|
+      begin
+        object.class.class_eval("alias #{message.inspect} #{each.inspect}")
+        true === block.call
+      rescue => ex
+        false
+      ensure
+        object.class.class_eval("remove_method #{message.inspect}")
+      end
+    end
+    return object, found
   end
 
-  private
+  BLACKLIST = [:cycle]
 
-  def self.methods(object)
+  def self.methods_for(object)
     object.class.ancestors
       .take_while { |a| Object != a }
       .flat_map { |a| a.instance_methods(all = false) }
-      .concat %w(! !=  == !~  <=> ===  =~ eql? equal? )
-      .concat %w(hash instance_of? is_a? kind_of? nil? to_s)
+      .concat(%w(
+        ! !=  == !~  <=> ===  =~ class eql? equal?
+        instance_of? is_a? kind_of? hash nil? to_s
+      ))
       .map(&:to_sym)
       .uniq
+      .- BLACKLIST
   end
 
 end
 
-class Object
-
-  def find_methods(options = {})
-    Methodfinder.call(self, options).map(&:first).uniq
+def solve(&block)
+  object, found = Methodfinder.solve(&block)
+  puts "Found #{found.count} methods for #{block.source}"
+  found.map do |symbol|
+    method = object.method(symbol)
+    puts "- #{method.owner}\e[32m##{method.name}\e[0m"
   end
-
-  def print_methods(options = {})
-    found = Methodfinder.call(self, options)
-    puts "Found #{found.count} methods"
-    found.map do |symbol, args, result|
-      method = self.method(symbol)
-      params = "(#{args.map(&:inspect).join(', ')})" unless args.empty?
-      print "- #{method.owner}\e[32m##{method.name}\e[0m#{params}"
-      print " => " << result.inspect unless result == options[:match]
-      puts
-    end
-    puts
-  end
-
+  puts
 end
 
 words = %w(the quick brown fox jumps over the lazy dog)
 
-words.print_methods(match: 'the')
+solve {
+  words.dup.foo == 'the'
+}
 
-words.print_methods(match: Numeric)
+solve {
+  words.dup.foo(%w(fox dog)) == %w(the quick brown jumps over the lazy)
+}
 
-words.print_methods(block: :itself, match: Hash)
+solve {
+  Numeric === words.dup.foo
+}
 
-%(the quick brown fox jumps over the lazy dog).print_methods(match: words)
+solve {
+  Hash === words.dup.foo(&:itself)
+}
 
-%w(the quick brown fox).print_methods(args: [%w(jumps over the lazy dog)], match: words)
+solve {
+  %(the quick brown fox jumps over the lazy dog).foo == words
+}
 
-'hello'.print_methods(match: 'Hello')
+solve {
+  %w(the quick brown fox).foo %w(jumps over the lazy dog) == words
+}
 
-Math::PI.print_methods(match: 3)
+solve {
+  'hello'.foo == 'Hello'
+}
+
+solve {
+  Math::PI.foo == 3
+}
+
+solve {
+  3.41.foo == 3 && -3.41.foo == -3
+}
+
+solve {
+  ''.foo == String
+}
+
+solve {
+  'hello'.foo == 'olleh'
+}
+
+solve {
+  'example.rb'.foo('.rb') == 'example'
+}
+
+solve {
+  'example.rb'.foo('example') == '.rb'
+}
+
+solve {
+  /aura/.foo('restaurant')
+}
+
+solve {
+  %w(a bb ccc).foo(&:chars) == %w(a b b c c c)
+}
