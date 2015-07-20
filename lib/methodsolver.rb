@@ -3,34 +3,20 @@ require 'method_source'
 
 module Methodsolver
 
-  # Patch NoMethodError#reciever
-
-  NoMethodError.class_eval('attr_accessor :reciever')
-  Object.class_eval("""
-    def method_missing(*args)
-      begin
-        super
-      rescue NoMethodError => ex
-        ex.reciever = self
-        raise ex
-      end
-    end
-  """)
-
   def self.call(&block)
     raise ArgumentError, 'no block given' unless block_given?
     begin
-      block.call
-    rescue NoMethodError => ex
-      object = ex.reciever
-      message = ex.name
+      Object.class_eval('def method_missing(name, *args); throw :reciever, [self, name]; end')
+      object, message = catch :reciever, &block
+    ensure
+      Object.class_eval('remove_method :method_missing')
     end
     raise ArgumentError, 'no unknown method found' unless message
     found = methods_for(object).select do |each|
       begin
         object.class.class_eval("alias #{message.inspect} #{each.inspect}")
         true === block.call
-      rescue => ex
+      rescue
         false
       ensure
         object.class.class_eval("remove_method #{message.inspect}")
