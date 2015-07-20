@@ -12,23 +12,27 @@ Will find `#length` and `#size`
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Clone this repo and run pry:
 
-```ruby
-gem 'methodsolver'
-```
+    git clone https://github.com/akuhn/methodsolver.git
+    cd methodsolver
+    bundle
+    bundle exec pry
 
 And then execute:
 
-    $ bundle
+```ruby
+require 'methodsolver'
+solve { 'lettuce'.foo == 7 }
+```
 
-Or install it yourself as:
-
-    $ gem install methodsolver
+Please refer to `examples/solve.rb` (and the rspec tests) for more examples.
 
 ## Usage
 
-Use with caution! The solver attempts to executes the block with arbitrary methods found on the reciever. Beware of side effects and append dangerous methods to `Methodsolver::BLACKLIST`.
+Use with caution!
+
+The solver attempts to executes the block with arbitrary methods found on the reciever. Beware of side effects. Append the symbol of dangerous methods to `Methodsolver::BLACKLIST` in order to blacklist them.
 
 ## Development
 
