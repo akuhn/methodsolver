@@ -1,7 +1,7 @@
-# Find Ruby methods
+require "methodsolver/version"
 require 'method_source'
 
-module Methodfinder
+module Methodsolver
 
   # Patch NoMethodError#reciever
 
@@ -17,7 +17,7 @@ module Methodfinder
     end
   """)
 
-  def self.solve(&block)
+  def self.call(&block)
     raise ArgumentError, 'no block given' unless block_given?
     begin
       block.call
@@ -57,73 +57,11 @@ module Methodfinder
 end
 
 def solve(&block)
-  object, found = Methodfinder.solve(&block)
-  puts "Found #{found.count} methods for #{block.source}"
+  object, found = Methodsolver.call(&block)
+  puts "Found #{found.count} methods for #{block.source.strip}"
   found.map do |symbol|
     method = object.method(symbol)
     puts "- #{method.owner}\e[32m##{method.name}\e[0m"
   end
   puts
 end
-
-words = %w(the quick brown fox jumps over the lazy dog)
-
-solve {
-  words.dup.foo == 'the'
-}
-
-solve {
-  words.dup.foo(%w(fox dog)) == %w(the quick brown jumps over the lazy)
-}
-
-solve {
-  Numeric === words.dup.foo
-}
-
-solve {
-  Hash === words.dup.foo(&:itself)
-}
-
-solve {
-  %(the quick brown fox jumps over the lazy dog).foo == words
-}
-
-solve {
-  %w(the quick brown fox).foo %w(jumps over the lazy dog) == words
-}
-
-solve {
-  'hello'.foo == 'Hello'
-}
-
-solve {
-  Math::PI.foo == 3
-}
-
-solve {
-  3.41.foo == 3 && -3.41.foo == -3
-}
-
-solve {
-  ''.foo == String
-}
-
-solve {
-  'hello'.foo == 'olleh'
-}
-
-solve {
-  'example.rb'.foo('.rb') == 'example'
-}
-
-solve {
-  'example.rb'.foo('example') == '.rb'
-}
-
-solve {
-  /aura/.foo('restaurant')
-}
-
-solve {
-  %w(a bb ccc).foo(&:chars) == %w(a b b c c c)
-}
