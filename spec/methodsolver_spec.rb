@@ -16,13 +16,13 @@ describe Methodsolver do
   it 'should fail when no block given' do
     expect {
       Methodsolver.call
-    }.to raise_error ArgumentError
+    }.to raise_error ArgumentError, 'no block given'
   end
 
   it 'should fail when no placeholder given' do
     expect {
       Methodsolver.call { 3 + 4 == 7 }
-    }.to raise_error ArgumentError
+    }.to raise_error ArgumentError, 'no missing method found'
   end
 
   let(:words) do

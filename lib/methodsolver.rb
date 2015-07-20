@@ -6,12 +6,13 @@ module Methodsolver
   def self.call(&block)
     raise ArgumentError, 'no block given' unless block_given?
     begin
-      Object.class_eval('def method_missing(name, *args); throw :reciever, [self, name]; end')
-      object, message = catch :reciever, &block
+      Object.class_eval('def method_missing(name, *args); throw :method_missing, [self, name]; end')
+      method_missing = catch :method_missing do block.call; nil end
     ensure
       Object.class_eval('remove_method :method_missing')
     end
-    raise ArgumentError, 'no unknown method found' unless message
+    raise ArgumentError, 'no missing method found' unless method_missing
+    object, message = method_missing
     found = methods_for(object).select do |each|
       begin
         object.class.class_eval("alias #{message.inspect} #{each.inspect}")
@@ -44,7 +45,7 @@ end
 
 def solve(&block)
   object, found = Methodsolver.call(&block)
-  puts "Found #{found.count} methods for #{block.source.strip}"
+  puts "Found #{found.count} methods for #{block.source.strip rescue 'source not available'}"
   found.map do |symbol|
     method = object.method(symbol)
     puts "- #{method.owner}\e[32m##{method.name}\e[0m"
