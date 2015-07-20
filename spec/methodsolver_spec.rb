@@ -59,9 +59,15 @@ describe Methodsolver do
 
   it 'should find methods that raise errors' do
     object, found = Methodsolver.call {
-      words.dup.freeze.foo rescue true
+      begin
+        words.dup.freeze.foo
+        false
+      rescue RuntimeError
+        true
+      end
     }
-    expect(found).to include :clear
+    expect(found).to include :shift
+    expect(found).to_not include :take
   end
 
 end
