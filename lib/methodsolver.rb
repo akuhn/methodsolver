@@ -14,31 +14,33 @@ module Methodsolver
     raise ArgumentError, 'no missing method found' unless method_missing
     object, message = method_missing
     found = methods_for(object).select do |each|
+      method = object.method(each) rescue false
       begin
-        object.class.class_eval("alias #{message.inspect} #{each.inspect}")
+        method.owner.class_eval("alias #{message.inspect} #{each.inspect}")
         true === block.call
       rescue
         false
       ensure
-        object.class.class_eval("remove_method #{message.inspect}")
+        method.owner.class_eval("remove_method #{message.inspect}")
       end
     end
     return object, found
   end
 
   BLACKLIST = [:cycle]
+  WHITELIST = %w(
+    ! !=  == !~  <=> ===  =~ class eql? equal?
+    instance_of? is_a? kind_of? hash nil? to_s
+  )
 
   def self.methods_for(object)
     object.class.ancestors
-      .take_while { |a| Object != a }
-      .flat_map { |a| a.instance_methods(all = false) }
-      .concat(%w(
-        ! !=  == !~  <=> ===  =~ class eql? equal?
-        instance_of? is_a? kind_of? hash nil? to_s
-      ))
-      .map(&:to_sym)
+      .unshift((object.singleton_class rescue nil)).compact
+      .take_while { |cls| ![Class, Module, Object].member?(cls) }
+      .flat_map { |cls| cls.instance_methods(all = false) }
+      .concat(WHITELIST.map(&:to_sym))
+      .-(BLACKLIST.map(&:to_sym))
       .uniq
-      .- BLACKLIST
   end
 
 end

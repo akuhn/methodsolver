@@ -36,11 +36,25 @@ describe Methodsolver do
     expect(found).to include :first
   end
 
+  it 'should find methods defined in a module' do
+    object, found = Methodsolver.call {
+      (8...15).foo == 7
+    }
+    expect(found).to include :count
+  end
+
+  it 'should find methods defined in a class' do
+    object, found = Methodsolver.call {
+      (8...15).foo == 15
+    }
+    expect(found).to include :end
+  end
+
   it 'should find methods with an argument' do
     object, found = Methodsolver.call {
-      words.dup.foo(/...../) == %w(quick brown jumps)
+      words.dup.foo('the') == 2
     }
-    expect(found).to include :grep
+    expect(found).to include :count
   end
 
   it 'should find methods with many arguments' do
@@ -68,6 +82,20 @@ describe Methodsolver do
     }
     expect(found).to include :shift
     expect(found).to_not include :take
+  end
+
+  it 'should find singleton methods' do
+    object = Object.new
+    def object.singleton_method; 42; end
+    _, found = Methodsolver.call {
+      object.foo == 42
+    }
+    expect(found).to include :singleton_method
+  end
+
+  it 'should find methods on numbers' do
+    object, found = Methodsolver.call { 3.foo(4) == 7 }
+    expect(found).to include :+
   end
 
 end
