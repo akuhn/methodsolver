@@ -98,4 +98,10 @@ describe Methodsolver do
     expect(found).to include :+
   end
 
+  it 'should blacklist setters' do
+    example = Struct.new(:example).new(42)
+    names = Methodsolver.methods_for(example)
+    expect(names).to_not include :example=
+  end
+
 end
