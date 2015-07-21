@@ -10,7 +10,7 @@ module Methodsolver
 
     begin
       Object.class_eval('def method_missing(name, *args); throw :undefined_method, [self, name]; end')
-      reciever, placeholder = catch :undefined_method do
+      receiver, placeholder = catch :undefined_method do
         block.call
         raise ArgumentError, 'no missing method found'
       end
@@ -20,8 +20,8 @@ module Methodsolver
 
     # Find methods that pass the block:
 
-    results = methods_for(reciever).select do |name|
-      method = reciever.method(name) rescue next
+    results = methods_for(receiver).select do |name|
+      method = receiver.method(name) rescue next
       begin
         method.owner.class_eval("alias #{placeholder.inspect} #{name.inspect}")
         true === block.call
@@ -35,7 +35,7 @@ module Methodsolver
     # Optionally return a hash with metadata:
 
     if options[:metadata]
-      { reciever: reciever, placeholder: placeholder, results: results }
+      { receiver: receiver, placeholder: placeholder, results: results }
     else
       results
     end
@@ -67,7 +67,7 @@ end
 
 def solve(&block)
   data = Methodsolver.call(metadata: true, &block)
-  object, found = data[:reciever], data[:results]
+  object, found = data[:receiver], data[:results]
   if block.respond_to? :method_source
     puts "Found #{found.count} methods for #{block.method_source.strip}"
   else
