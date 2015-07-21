@@ -68,7 +68,11 @@ end
 def solve(&block)
   data = Methodsolver.call(metadata: true, &block)
   object, found = data[:reciever], data[:results]
-  puts "Found #{found.count} methods for #{block.source.strip rescue 'source not available'}"
+  if block.respond_to? :method_source
+    puts "Found #{found.count} methods for #{block.method_source.strip}"
+  else
+    puts "Found #{found.count} methods for ##{data[:placeholder]}"
+  end
   found.map do |symbol|
     method = object.method(symbol)
     puts "- #{method.owner}\e[32m##{method.name}\e[0m"
