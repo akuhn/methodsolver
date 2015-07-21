@@ -7,7 +7,7 @@ describe Methodsolver do
   end
 
   it 'should pass README.md example' do
-    object, found = Methodsolver.call { 'lettuce'.foo == 7 }
+    found = Methodsolver.call { 'lettuce'.foo == 7 }
 
     expect(found).to include :size
     expect(found).to include :length
@@ -30,49 +30,49 @@ describe Methodsolver do
   end
 
   it 'should find methods without arguments' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       words.dup.foo == 'the'
     }
     expect(found).to include :first
   end
 
   it 'should find methods defined in a module' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       (8...15).foo == 7
     }
     expect(found).to include :count
   end
 
   it 'should find methods defined in a class' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       (8...15).foo == 15
     }
     expect(found).to include :end
   end
 
   it 'should find methods with an argument' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       words.dup.foo('the') == 2
     }
     expect(found).to include :count
   end
 
   it 'should find methods with many arguments' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       words.dup.foo(1, 2, 4) == %w(quick brown jumps)
     }
     expect(found).to include :values_at
   end
 
   it 'should find methods with block argument' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       words.dup.foo(&:size) == [3, 5, 5, 3, 5, 4, 3, 4, 3]
     }
     expect(found).to include :collect
   end
 
   it 'should find methods that raise errors' do
-    object, found = Methodsolver.call {
+    found = Methodsolver.call {
       begin
         words.dup.freeze.foo
         false
@@ -87,14 +87,14 @@ describe Methodsolver do
   it 'should find singleton methods' do
     object = Object.new
     def object.singleton_method; 42; end
-    _, found = Methodsolver.call {
+    found = Methodsolver.call {
       object.foo == 42
     }
     expect(found).to include :singleton_method
   end
 
   it 'should find methods on numbers' do
-    object, found = Methodsolver.call { 3.foo(4) == 7 }
+    found = Methodsolver.call { 3.foo(4) == 7 }
     expect(found).to include :+
   end
 
