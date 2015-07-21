@@ -57,7 +57,7 @@ module Methodsolver
       .take_while { |cls| ![Class, Module, Object].member?(cls) }
       .flat_map { |cls| cls.instance_methods(all = false) }
       .concat(object.singleton_methods)
-      .reject { |name| name =~ /=$/ }
+      .reject { |name| name =~ /[=!]$/ }
       .concat(WHITELIST)
       .-(BLACKLIST)
       .uniq

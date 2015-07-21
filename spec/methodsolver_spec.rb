@@ -104,4 +104,9 @@ describe Methodsolver do
     expect(names).to_not include :example=
   end
 
+  it 'should dangerous methods' do
+    names = Methodsolver.methods_for('example')
+    expect(names).to_not include :reverse!
+  end
+
 end
