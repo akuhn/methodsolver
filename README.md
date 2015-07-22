@@ -12,7 +12,7 @@ Will find `#length` and `#size`
 
 Use with caution and beware of side effects!
 
-The solver attempts to executes the block with arbitrary methods found on the reciever. Append the symbol of dangerous methods to `Methodsolver::BLACKLIST` in order to blacklist them.
+The solver attempts to executes the block with arbitrary methods found on the receiver. Append the symbol of dangerous methods to `Methodsolver::BLACKLIST` in order to blacklist them.
 
 ## Installation
 
