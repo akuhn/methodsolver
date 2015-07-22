@@ -7,10 +7,12 @@ describe Methodsolver do
   end
 
   it 'should pass README.md example' do
-    found = Methodsolver.call { 'lettuce'.foo == 7 }
-
-    expect(found).to include :size
-    expect(found).to include :length
+    found = Methodsolver.call {
+      h = { a: 1, bunny: 2, c: 3 }
+      h.______(:bunny)
+      h.keys == [:a, :c]
+    }
+    expect(found).to include :delete
   end
 
   it 'should fail when no block given' do

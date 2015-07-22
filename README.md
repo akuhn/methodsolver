@@ -5,32 +5,28 @@ Finds ruby methods given a block with placeholder.
 For example:
 
 ```ruby
-solve { 'lettuce'.foo == 7 }
+solve {
+  h = { a: 1, bunny: 2, c: 3 }
+  h.______(:bunny)
+  h.keys == [:a, :c]
+}
 ```
 
-Will find `#length` and `#size`
+Will find `#delete`
 
-Use with caution and beware of side effects!
+Use with caution!
 
-The solver attempts to executes the block with arbitrary methods found on the receiver. Append the symbol of dangerous methods to `Methodsolver::BLACKLIST` in order to blacklist them.
+Beware of side effects. The solver attempts to execute the block with arbitrary methods found on the receiver. Append the symbol of dangerous methods to `Methodsolver::BLACKLIST` in order to blacklist them. Setters and bang methods are blacklisted by default.
+
+## Usage
+
+Please refer to `examples/solve.rb` (and the rspec tests) for more examples.
 
 ## Installation
 
-Clone this repo and run pry:
+Get this gem:
 
-    git clone https://github.com/akuhn/methodsolver.git
-    cd methodsolver
-    bundle
-    bundle exec pry
-
-And then execute:
-
-```ruby
-require 'methodsolver'
-solve { 'lettuce'.foo == 7 }
-```
-
-Please refer to `examples/solve.rb` (and the rspec tests) for more examples.
+    gem install methodsolver
 
 ## Contributing
 
