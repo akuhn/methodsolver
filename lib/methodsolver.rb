@@ -18,6 +18,8 @@ module Methodsolver
       Object.class_eval('remove_method :method_missing')
     end
 
+    somewhat_limited_safety_checks(receiver, block) unless options[:unsafe]
+
     # Find methods that pass the block:
 
     results = methods_for(receiver).select do |name|
@@ -63,10 +65,29 @@ module Methodsolver
       .uniq
   end
 
+  SAVE = [Array, Fixnum, Float, Hash, Object, Range, Regexp, String]
+
+  def self.somewhat_limited_safety_checks(receiver, block)
+    return if receiver.nil?
+    block.binding.eval('local_variables').each do |name|
+      if receiver.equal? block.binding.eval("#{name} rescue nil")
+        receiver.clone rescue break # omit warning for immutables
+        raise ArgumentError,
+          "receiver equals local variable '#{name}', " <<
+          "use solve(unsafe: true) or clone/dup the variable"
+      end
+    end
+    unless SAVE.include? receiver.class
+      raise ArgumentError,
+        "class of receiver not marked as save: #{receiver.class}, " <<
+        "use solve(unsafe: true) or append to Methodsolver::SAVE"
+    end
+  end
+
 end
 
-def solve(&block)
-  data = Methodsolver.call(metadata: true, &block)
+def solve(options = {}, &block)
+  data = Methodsolver.call(options.merge(metadata: true), &block)
   object, found = data[:receiver], data[:results]
   if block.respond_to? :method_source
     puts "Found #{found.count} methods for #{block.method_source.strip}"

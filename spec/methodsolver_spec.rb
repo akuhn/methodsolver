@@ -36,18 +36,14 @@ describe Methodsolver do
     expect(found).to include :first
   end
 
-  it 'should find methods defined in a module' do
-    found = Methodsolver.call {
-      (8...15).foo == 7
-    }
-    expect(found).to include :count
+  it 'should find methods defined by a module' do
+    names = Methodsolver.methods_for(1..10)
+    expect(names).to include :take_while # defined in Enumerable
   end
 
-  it 'should find methods defined in a class' do
-    found = Methodsolver.call {
-      (8...15).foo == 15
-    }
-    expect(found).to include :end
+  it 'should find methods defined by a class' do
+    names = Methodsolver.methods_for(1..10)
+    expect(names).to include :each # defined in Range
   end
 
   it 'should find methods with an argument' do
@@ -85,12 +81,10 @@ describe Methodsolver do
   end
 
   it 'should find singleton methods' do
-    object = Object.new
-    def object.singleton_method; 42; end
-    found = Methodsolver.call {
-      object.foo == 42
-    }
-    expect(found).to include :singleton_method
+    example = Object.new
+    def example.singleton_method; end
+    names = Methodsolver.methods_for(example)
+    expect(names).to include :singleton_method
   end
 
   it 'should find methods on numbers' do
@@ -104,7 +98,7 @@ describe Methodsolver do
     expect(names).to_not include :example=
   end
 
-  it 'should dangerous methods' do
+  it 'should blacklist dangerous methods' do
     names = Methodsolver.methods_for('example')
     expect(names).to_not include :reverse!
   end

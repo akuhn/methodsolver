@@ -1,21 +1,23 @@
 require 'methodsolver'
 
-words = %w(the quick brown fox jumps over the lazy dog)
-
 solve {
-  words.dup.foo == 'the'
+  words = %w(the quick brown fox jumps over the lazy dog)
+  words.foo == 'the'
 }
 
 solve {
-  words.dup.foo(%w(fox dog)) == %w(the quick brown jumps over the lazy)
+  words = %w(the quick brown fox jumps over the lazy dog)
+  words.foo(%w(fox dog)) == %w(the quick brown jumps over the lazy)
 }
 
 solve {
-  Numeric === words.dup.foo
+  words = %w(the quick brown fox jumps over the lazy dog)
+  Numeric === words.foo
 }
 
 solve {
-  Hash === words.dup.foo(&:itself)
+  words = %w(the quick brown fox jumps over the lazy dog)
+  Hash === words.foo(&:itself)
 }
 
 solve {
