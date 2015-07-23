@@ -105,4 +105,29 @@ describe Methodsolver do
     expect(names).to_not include :reverse!
   end
 
+  it 'should fail when receiver is from outer scope' do
+    defined_in_outer_scope = 'example'
+    expect {
+      Methodsolver.call { defined_in_outer_scope.foo }
+    }.to raise_error ArgumentError, /receiver equals local variable/
+  end
+
+  it 'should fail when unsave object given' do
+    expect {
+      Methodsolver.call { File.open('/dev/null').foo }
+    }.to raise_error ArgumentError, /receiver not marked as save/
+  end
+
+  it 'should fail when people make typos' do
+    expect {
+      Methodsolver.call { type = 'example'; typo.foo }
+    }.to raise_error NameError, /undefined/
+  end
+
+  it 'should fail when placeholder is not a blank or foo' do
+    expect {
+      Methodsolver.call { 'example'.blank? }
+    }.to raise_error NoMethodError, /undefined/
+  end
+
 end

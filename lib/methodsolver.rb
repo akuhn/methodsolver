@@ -3,13 +3,20 @@ require 'method_source'
 
 module Methodsolver
 
+  PATTERN = /^(__|foo|ba[rz]|qux|unknown)/
+
   def self.call(options = {}, &block)
     raise ArgumentError, 'no block given' unless block_given?
 
     # Detect missing method, ie placeholder:
 
     begin
-      Object.class_eval('def method_missing(name, *args); throw :undefined_method, [self, name]; end')
+      Object.class_eval("""
+        def method_missing(name, *args)
+          super unless #{PATTERN.inspect} === name
+          throw :undefined_method, [self, name]
+        end
+      """)
       receiver, placeholder = catch :undefined_method do
         block.call
         raise ArgumentError, 'no missing method found'
@@ -56,9 +63,9 @@ module Methodsolver
 
   def self.methods_for(object)
     object.class.ancestors
+      .unshift((object.singleton_class rescue nil)).compact
       .take_while { |cls| ![Class, Module, Object].member?(cls) }
       .flat_map { |cls| cls.instance_methods(all = false) }
-      .concat(object.singleton_methods)
       .reject { |name| name =~ /[=!]$/ }
       .concat(WHITELIST)
       .-(BLACKLIST)

@@ -2,64 +2,66 @@ require 'methodsolver'
 
 solve {
   words = %w(the quick brown fox jumps over the lazy dog)
-  words.foo == 'the'
+  words.___ == 'the'
 }
 
 solve {
   words = %w(the quick brown fox jumps over the lazy dog)
-  words.foo(%w(fox dog)) == %w(the quick brown jumps over the lazy)
+  words.___(%w(fox dog)) == %w(the quick brown jumps over the lazy)
 }
 
 solve {
   words = %w(the quick brown fox jumps over the lazy dog)
-  Numeric === words.foo
+  Numeric === words.___
 }
 
 solve {
   words = %w(the quick brown fox jumps over the lazy dog)
-  Hash === words.foo(&:itself)
+  Hash === words.___(&:itself)
 }
 
 solve {
-  %(the quick brown fox jumps over the lazy dog).foo == words
+  words = %w(the quick brown fox jumps over the lazy dog)
+  %(the quick brown fox jumps over the lazy dog).___ == words
 }
 
 solve {
-  %w(the quick brown fox).foo %w(jumps over the lazy dog) == words
+  words = %w(the quick brown fox jumps over the lazy dog)
+  %w(the quick brown fox).___ %w(jumps over the lazy dog) == words
 }
 
 solve {
-  'hello'.foo == 'Hello'
+  'hello'.___ == 'Hello'
 }
 
 solve {
-  Math::PI.foo == 3
+  Math::PI.___ == 3
 }
 
 solve {
-  3.41.foo == 3 && -3.41.foo == -3
+  3.41.___ == 3 && -3.41.___ == -3
 }
 
 solve {
-  ''.foo == String
+  ''.___ == String
 }
 
 solve {
-  'hello'.foo == 'olleh'
+  'hello'.___ == 'olleh'
 }
 
 solve {
-  'example.rb'.foo('.rb') == 'example'
+  'example.rb'.___('.rb') == 'example'
 }
 
 solve {
-  'example.rb'.foo('example') == '.rb'
+  'example.rb'.___('example') == '.rb'
 }
 
 solve {
-  /aura/.foo('restaurant')
+  /aura/.___('restaurant')
 }
 
 solve {
-  1.foo(10) == 1..10
+  1.___(10) == 1..10
 }
