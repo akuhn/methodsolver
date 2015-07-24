@@ -1,0 +1,132 @@
+Found 1 methods for #______
+- Hash#delete
+
+Find common elements of arrays:
+Found 1 methods for #_____
+- Array#&
+
+Check object equality:
+Found 3 methods for #___
+- Array#eql?
+- Array#==
+- Kernel#===
+
+Check object identity:
+Found 1 methods for #___
+- BasicObject#equal?
+
+Remove file extension if present:
+Found 2 methods for #_____
+- String#chomp
+- String#delete
+
+Find file extension:
+Found 2 methods for #_____
+- String#include?
+- String#end_with?
+
+Write as proper noun:
+Found 1 methods for #_____
+- String#capitalize
+
+What's left after division:
+Found 3 methods for #_____
+- Fixnum#%
+- Fixnum#modulo
+- Numeric#remainder
+
+Add default values to hash:
+Found 0 methods for #_____
+
+Add new values to hash:
+Found 3 methods for #_____
+- Hash#update
+- Hash#replace
+- Hash#merge
+
+Turn list of words into list of chars:
+Found 2 methods for #_____
+- Enumerable#flat_map
+- Enumerable#collect_concat
+
+Combine two arrays:
+Found 3 methods for #_____
+- Array#concat
+- Array#+
+- Array#|
+
+Which enumerations turn arrays into hashes?
+Found 1 methods for #_____
+- Enumerable#group_by
+
+Remove element:
+Found 0 methods for #_____
+
+Split into words:
+Found 2 methods for #_____
+- String#split
+- String#partition
+
+Remove all occurrences:
+Found 1 methods for #_____
+- String#delete
+
+Replace all occurrences:
+Found 3 methods for #_____
+- String#gsub
+- String#tr
+- String#tr_s
+
+Is element in array?
+Found 0 methods for #_____
+
+Does array contain element?
+Found 2 methods for #_____
+- Array#include?
+- Enumerable#member?
+
+Split an array into pairs?
+Found 6 methods for #_____
+- Array#permutation
+- Array#combination
+- Array#repeated_permutation
+- Array#repeated_combination
+- Enumerable#each_slice
+- Enumerable#each_cons
+
+Which enum is like a map?
+Found 4 methods for #_____
+- Array#collect
+- Array#map
+- Enumerable#flat_map
+- Enumerable#collect_concat
+
+Which enum is like a fold?
+Found 2 methods for #_____
+- Enumerable#inject
+- Enumerable#reduce
+
+Which enum is like a filter?
+Found 3 methods for #_____
+- Array#select
+- Array#keep_if
+- Enumerable#find_all
+
+And is there an inverse filter?
+Found 2 methods for #_____
+- Array#delete_if
+- Array#reject
+
+Which enum finds the first match?
+Found 2 methods for #_____
+- Enumerable#find
+- Enumerable#detect
+
+Which enum finds the shortest word?
+Found 1 methods for #_____
+- Enumerable#min_by
+
+Can we use an enum for splitting?
+Found 1 methods for #_____
+- Enumerable#slice_when
+
