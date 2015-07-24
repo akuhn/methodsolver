@@ -56,7 +56,7 @@ module Methodsolver
     :cycle,
   ]
   WHITELIST = [
-    :'!', :'!=', :'!~', :'<', :'<=', :'<=>', :'==', :'===', :'=~', :'>', :'>=',
+    :'!', :'<', :'<=', :'<=>', :'==', :'===', :'=~', :'>', :'>=',
     :class, :eql?, :equal?, :hash, :instance_of?, :is_a?, :itself, :kind_of?,
     :nil?, :respond_to?, :tap, :to_s,
   ]
