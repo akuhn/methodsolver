@@ -20,7 +20,7 @@ Beware of side effects. The solver attempts to execute the block with arbitrary 
 
 ## Usage
 
-Please refer to `examples/solve.rb` (and the rspec tests) for more examples.
+Please refer to [`examples/examples.rb`](examples/examples.rb) (and the rspec tests) for more examples.
 
 ## Installation
 

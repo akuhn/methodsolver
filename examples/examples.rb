@@ -93,3 +93,61 @@ solve { 'a bb ccc'._____(' ') == 'abbccc' }
 
 puts "Replace all occurrences:"
 solve { 'a bb ccc'._____(' ', '+') == 'a+bb+ccc' }
+
+
+puts "Is element in array?"
+solve { 'bunny'._____(%w(a bunny c d e)) }
+
+
+puts "Does array contain element?"
+solve { %w(a bunny c d e)._____('bunny') }
+
+
+puts "Split an array into pairs?"
+solve {
+  pairs = %w(a b c d e f)._____(2)
+  pairs.map(&:size).uniq == [2]
+}
+
+
+# Fun with enumerations ...
+
+def words
+  %w(this array has five words)
+end
+
+puts "Which enum is like a map?"
+solve {
+  words._____{ |each| each.size } == [4, 5, 3, 4, 5]
+}
+
+puts "Which enum is like a fold?"
+solve {
+  words._____{ |a, b| a.swapcase + b } == 'thisARRAYhasFIVEwords'
+}
+
+puts "Which enum is like a filter?"
+solve {
+  words._____{ |each| each.size == 5 } == %w(array words)
+}
+
+puts "And is there an inverse filter?"
+solve {
+  words._____{ |each| each.size == 5 } == %w(this has five)
+}
+
+puts "Which enum finds the first match?"
+solve {
+  words._____{ |each| each.size == 5 } == 'array'
+}
+
+puts "Which enum finds the shortest word?"
+solve {
+  words._____{ |each | each.size } == 'has'
+}
+
+puts "Can we use an enum for splitting?"
+solve {
+  groups = %w(a b b b c c)._____{ |a, b| a != b }
+  groups.map(&:size) == [1, 3, 2]
+}
